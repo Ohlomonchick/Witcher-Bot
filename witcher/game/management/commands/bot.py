@@ -1,16 +1,19 @@
+import asyncio
+
 from asgiref.sync import sync_to_async
 
 from .config import TOKEN
 import logging
-import time
-# import asyncio
-# from datetime import datetime
-from .rpg_data import rpg_data
+from .keyboards import *
+from .game_data import rpg_data
 
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, \
+    InlineKeyboardMarkup, InlineKeyboardButton
 from django.core.management.base import BaseCommand
 
 from ...models import Profile
+from .session import Session
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,18 +22,7 @@ dp = Dispatcher(bot)
 
 log = logging.getLogger()
 
-
-def time_track(f):
-
-    def inner(*args, **kwargs):
-        started_at = time.time()
-
-        f(*args, **kwargs)
-
-        ended_at = time.time()
-        elapsed = round(ended_at - started_at, 4)
-        print(f'Функция работала {elapsed} секунд(ы)')
-    return inner
+sessions = {}
 
 
 def log_errors(f):
@@ -53,49 +45,46 @@ states = {
 }
 
 
-class RPG:
+# rpg = Session(rpg_data=rpg_data)
+@dp.callback_query_handler(lambda c: c.data == 'start_game')
+async def process_callback_start_game(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    p = await sync_to_async(Profile.objects.get)(external_id=callback_query.from_user.id)
+    session = Session(profile=p)
 
-    def __init__(self, rpg_data, state):
-        # global rpg_data
-        self.rpg_data = rpg_data
-        self.action_data = self.rpg_data[0]
-        self.action = self.action_data['name']
-        self.chosen_action = None
-        self.available_actions = None
-        self.message = ''
-        self.started = False
-        self.answer = None
-        self.state = None
+    loop = asyncio.get_running_loop()
+    loop.create_task(session.scheduled())
 
-    def
+    sessions[callback_query.from_user.id] = session
+    await bot.send_message(callback_query.from_user.id, 'Игра начинается!')
 
-rpg = RPG(rpg_data=rpg_data)
 
-@dp.message_handler()
-async def base_message_handler(message: types.Message)
-    global rpg
-    started_at = time.time()
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    text = f'Ваш id: {message.from_user.id} \n'
 
-    text = f'Ваш id: {message.from_user.id} \n \nТекст: '
-
-    p, _ = await sync_to_async(Profile.objects.get_or_create, thread_sensitive=True)(
+    p, created = await sync_to_async(Profile.objects.get_or_create, thread_sensitive=True)(
         external_id=message.from_user.id,
         defaults={
             'name': message.from_user.username,
         }
     )
-    if _ == True:
+    kb = game_not_exist_kb
+    title = 'ДОБРО ПОЖАЛОВАТЬ В ИГРУ "ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
+    main_title = f'\n{title}\n'
+    if created:
+        text += f'{main_title}\n\nТаблица лидеров:'
+    else:
+        resume = ''
+        if p.position != 1:
+            resume = 'или продолжите текущую'
+            kb = game_exist_kb
+        text += f'{main_title}\nДавно не виделись...\n\nТаблица лидеров:'
+        text += f'\n\nНачните новую игру {resume}!'
 
-    await message.answer(text + message.text + '\n' + str(_))
+    await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
+    await message.answer(text + '\n' + str(created), reply_markup=kb)
 
-    ended_at = time.time()
-    elapsed = round(ended_at - started_at, 4)
-    print(f'Функция работала {elapsed} секунд(ы)')
-
-
-# run longpolling
-# if __name__ == '__main__':
-#     executor.start_polling(dp, skip_updates=True)
 
 class Command(BaseCommand):
     help = 'Бот'
