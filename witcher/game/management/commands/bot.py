@@ -68,14 +68,15 @@ async def get_from(message):
 
 async def not_started(message: types.Message):
     answer_text = 'Я не знаю, что на это ответить :( \n\nПомощь - /help '
-    patterns = ['нача', 'начн', 'продолж', 'старт', 'привет', 'здравст', 'салам']
+    patterns = ['нача', 'начн', 'игра', 'продолж', 'старт', 'привет', 'здравст', 'салам', 'рекорд', 'результат']
     kb = None
+    profile = None
     counter = 0
-    for p in patterns:
+    for p in patterns[:-2]:
         if p in message.text.lower() and counter == 0:
             counter += 1
             answer_text = ''
-            if p in patterns[-3:-1]:
+            if p in patterns[-5:-3]:
                 answer_text = 'Привет, хочешь начать игру? \n'
             title = '"ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
             main_title = f'\n{title}\n'
@@ -89,7 +90,17 @@ async def not_started(message: types.Message):
             answer_text += f'{main_title}\n'
             answer_text += f'Начните новую игру {resume}!'
     counter = 0
-    kb, answer_text = await table(counter, kb, message, answer_text)
+    for p in patterns[-2:-1]:
+        if p in message.text.lower() and counter == 0:
+            if not profile:
+                profile = await get_from(message)
+            your_goal = f'\n\nВАШ РЕКОРД:   {profile.total}\n'
+            if 'не знаю' in answer_text:
+                answer_text = your_goal
+            else:
+                answer_text += your_goal
+
+    kb, answer_text = await table(0, kb, message, answer_text)
 
     await message.answer(answer_text) if not kb else await message.answer(answer_text, reply_markup=kb)
 
@@ -102,9 +113,9 @@ async def table(counter, kb, message, text):
             if 'не знаю' in text:
                 text = 'Вы можете ознакомиться с таблицей лидеров на сайте:'
             else:
-                text += '\n\nВы также можете ознакомиться с таблицей лидеров'
+                text += '\nВы также можете ознакомиться с таблицей лидеров'
             if kb and kb == game_exist_kb:
-                kb = InlineKeyboardMarkup().add(start_game).add(resume_game).add(website_button)
+                kb = InlineKeyboardMarkup(row_width=2).add(start_game).insert(resume_game).add(website_button)
             elif kb and kb == game_not_exist_kb:
                 kb = InlineKeyboardMarkup().add(start_game).add(website_button)
             else:
@@ -154,6 +165,8 @@ states = {
 @dp.callback_query_handler(lambda c: c.data and c.data.startswith('btn'))
 async def process_callback_btn(callback_query: types.CallbackQuery):
     code = callback_query.data[-1]
+    place = int(callback_query.data[callback_query.data.index('_') + 1:-2])
+
     user_id = callback_query.from_user.id
     if user_id in sessions.keys():
         session = sessions[user_id]
@@ -162,17 +175,21 @@ async def process_callback_btn(callback_query: types.CallbackQuery):
         session.available_actions = [context for context, i in session.action_data['actions'].items()
                                       if (i[1] is None or session.profile.achievement[i[1]])]
 
-    session.chosen_action = int(code)
+    if place == int(session.action_data['name']):
+        await bot.answer_callback_query(callback_query.id)
+        session.chosen_action = int(code)
 
-    answer_text, image, sticker, kb = await session.action_process()
+        answer_text, image, sticker, kb = await session.action_process()
 
-    if sticker:
-        await bot.send_sticker(user_id, sticker)
+        if sticker:
+            await bot.send_sticker(user_id, sticker)
 
-    if kb:
-        await bot.send_message(user_id, answer_text, reply_markup=kb)
+        if kb:
+            await bot.send_message(user_id, answer_text, reply_markup=kb)
+        else:
+            await bot.send_message(user_id, answer_text)
     else:
-        await bot.send_message(user_id, answer_text)
+        await bot.answer_callback_query(callback_query.id, text='Не та часть истории!', show_alert=True)
 
 
 async def process_start(callback_query, new):
@@ -211,12 +228,14 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
 
 @dp.callback_query_handler(lambda c: c.data == 'resume_game')
 async def process_callback_resume_game(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
     await process_start(callback_query, new=('Игра продолжается!', False))
 
 
 @dp.callback_query_handler(lambda c: c.data == 'quit_game')
 async def process_callback_start_game(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
+    await bot.answer_callback_query(callback_query.id)
 
     session = await get_session(user_id=user_id)
     if session.profile.state == 'not_started':
@@ -252,7 +271,7 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    text = f'Ваш id: {message.from_user.id} \n'
+    text = f''
 
     p, created = await sync_to_async(Profile.objects.get_or_create, thread_sensitive=True)(
         external_id=message.from_user.id,
@@ -260,22 +279,24 @@ async def start(message: types.Message):
             'name': message.from_user.username,
         }
     )
-    text += str(p.achievement)
     kb = game_not_exist_kb
     title = 'ДОБРО ПОЖАЛОВАТЬ В ИГРУ "ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
     main_title = f'\n{title}\n'
+    disclaimer = '\nDISCLAIMER:\nИгра сохраняется автоматически после минуты бездействия, \n'
+    disclaimer += 'но вы также можете сохранять её вручную.\n Максимальное количество очков,\n'
+    disclaimer += 'когда либо набранное вами, не сбрасывается после начала новой игры.\nУдачной игры!\n'
     if created:
-        text += f'{main_title}\n\nТаблица лидеров:'
+        text += f'{main_title}{disclaimer}\n\nТаблица лидеров:'
     else:
         resume = ''
         if p.position != 1:
             resume = 'или продолжите текущую'
             kb = game_exist_kb
-        text += f'{main_title}\nДавно не виделись...\n\nТаблица лидеров:'
+        text += f'{main_title}{disclaimer}Рад снова тебя видеть.\n\nВАШ РЕКОРД:   {p.total}\n\nТаблица лидеров:'
         text += f'\n\nНачните новую игру {resume}!'
 
     await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
-    await message.answer(text + '\n' + str(created), reply_markup=kb)
+    await message.answer(text + '\n', reply_markup=kb)
 
 
 help_message = text(
@@ -284,6 +305,7 @@ help_message = text(
     "/start - приветствие",
     "/game - главное меню игры",
     "/leaders - список лидеров",
+    "/goal - ваш рекорд",
     "\nВы также можете просто попросить бота",
     "выполнить какое-либо действие",
     sep="\n"
@@ -297,13 +319,19 @@ async def process_help_message(message: types.Message):
 
 @dp.message_handler(commands=['game'])
 async def process_game_command(message: types.Message):
-    message.text = 'начало таблица'
+    message.text = 'начало таблица рекорд'
     await states['not_started'](message)
 
 
 @dp.message_handler(commands=['leaders'])
 async def process_leaders_command(message: types.Message):
     message.text = 'таблица'
+    await states['not_started'](message)
+
+
+@dp.message_handler(commands=['goal'])
+async def process_leaders_command(message: types.Message):
+    message.text = 'рекорд'
     await states['not_started'](message)
 
 

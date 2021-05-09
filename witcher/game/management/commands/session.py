@@ -20,6 +20,7 @@ class Session:
         self.chosen_action = None
         self.available_actions = None
         self.message = ''
+        self.correct = False
 
         self.text = ''
         self.answer = None
@@ -34,7 +35,7 @@ class Session:
         while True:
             await asyncio.sleep(20)
             if self.appeals == 0 and not self.can_be_deleted:
-                await sync_to_async(self.profile.save)()
+                await sync_to_async(self.profile.save, thread_sensitive=False)()
                 self.can_be_deleted = True
                 print('Автосохранение прошло успешно')
             self.appeals = 0
@@ -52,14 +53,21 @@ class Session:
             self.rpg_data = copy.deepcopy(rpg_data)
 
         if self.chosen_action:
+            if 'answer' not in self.action_data.keys() and not self.correct \
+                    and len(self.action_data['actions'][self.available_actions[self.chosen_action - 1]]) >= 3:
+                self.profile.achievement[self.action_data['actions'][self.available_actions[self.chosen_action - 1]][2]] = True
+                print('Получено достижение {}')
+
             if self.available_actions and self.chosen_action != len(self.available_actions) + 1:
                 self.action = self.available_actions[self.chosen_action - 1]
                 self.action_data = self.rpg_data[
                     self.action_data['actions'][self.available_actions[self.chosen_action - 1]][0]]
                 self.profile.position = int(self.action_data['name'])
 
-        if 'achievement' in self.action_data.keys():
-            self.profile[self.action_data['achievement']] = True
+        self.correct = False
+
+        # if 'achievement' in self.action_data.keys():
+        #     self.profile[self.action_data['achievement']] = True
 
         if 'answer' in self.action_data.keys():
             self.answer = self.action_data['answer']
@@ -87,7 +95,8 @@ class Session:
             for i, action in zip(range(len(self.available_actions)), self.available_actions):
                 if len(action) >= 50:
                     bigger = True
-                kb.add(InlineKeyboardButton(f'{i + 1}.{action}', callback_data=f'btn{i + 1}'))
+                kb.add(InlineKeyboardButton(f'{i + 1}.{action}',
+                                            callback_data=f'btn_{self.action_data["name"]}_{i + 1}'))
             if bigger:
                 text += '\n'
                 for i, action in zip(range(len(self.available_actions)), self.available_actions):
@@ -122,6 +131,7 @@ class Session:
             answer_text += self.answer['after']
             self.action_data.pop('answer')
             self.answer = None
+            self.correct = True
             return self.chosen_action, answer_text
 
         except Exception as exc:
