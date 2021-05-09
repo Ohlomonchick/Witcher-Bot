@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="{% static 'game/images/icons/ai_artificial_intelligence_technology_cpu_chip_icon_179499.ico' %}" type="image/icon">
+	<link type="text/css"  rel="stylesheet" href="{% static 'game/css/reset.css' %}">
+	<link type="text/css" href="{% static 'game/css/styles.css' %}" rel="stylesheet" />
+	<title>{{ title }}</title>
+</head>
+<body>
+	<header class="header">
+	</header>
+	<main class="main">
+        <!-- Блок контента -->
+		<!-- The video -->
+        {% block content %}
+        {% endblock %}
+
+	</main>
+		<footer class="footer">
+		<div class="footer-content">
+		<div class="footer-info">
+			<p>Автор проекта:</p>
+			<a class="person" href="https://vk.com/ohlomonchick337" target="_blank">
+				<div class="vk">
+				<img class="icon" src="{% static 'learning/images/footer/VK_Monochrome_Logo_t.png' %}">
+				</div>
+				<p>Проскурин Дмитрий</p>
+			</a>
+
+		</div>
+		<div class="footer-info">
+			<div class="email">
+				<p>Адрес для новых статей:</p>
+				<a>proskurin.dima16@gmail.com</a>
+			</div>
+		</div>
+		</div>
+		<div class="disclaimer">
+			© NEURAL
+		</div>
+	</footer>
+
+</body>
+</html>

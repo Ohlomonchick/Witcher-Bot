@@ -1,0 +1,66 @@
+{% extends 'game/base.html' %}
+{% load static %}
+{% block content %}
+
+{#    <video autoplay muted loop id="myVideo">#}
+{#  				<source src="videos/Cyberpunk.mp4" type="video/mp4">#}
+{#		</video>#}
+    <div id="particles-js"></div>
+		<div class="main-opacity on-video">
+				<div class="container">
+					<div class="container-center">
+						<h1 class="main-titleF">NEURAL
+							<span class="main-title2"></span>
+						</h1>
+						<div class="main-container">
+						<div>
+
+
+						</div>
+						</div>
+
+					</div>
+				</div>
+				<div class="scrollme scrollme-on-video" style=" ;">
+
+				</div>
+			</div>
+		<div class="prev-main main-block">
+			<div class="main-opacity prev-op">
+				<div class="container">
+					<div class="container-center">
+						<div class="main-container">
+						<div class="description">
+							<h2 class="bg-text">Дорогой читатель</h2>
+                            <p>&nbsp;&nbsp;&nbsp;Если ты зашёл на эту платформу, скорее всего ты интересуешься темой искусственного интеллекта. </p>
+							<p>&nbsp;&nbsp;&nbsp;Здесь ты найдёшь информацию о нейронных сетях: их устройстве, обучении и применении. По мере изучения данного материала ты сам научишься проектировать нейронные сети.
+                            Всё, что для этого необходимо - пройти&nbsp;регистрацию.</a> После ты сможешь приступить к изучению.</p>
+                            <p>Проходи уроки, выполняй тесты, зарабатывай очки и открывай доступ к новым знаниям!</p>
+						</div>
+						</div>
+						</div>
+					</div>
+				</div>
+			</div>
+    <ul class="list-articles">
+	{% for p in posts %}
+			<li><div class="news-type">
+	<p class="news-type">Очки: {{p.total}}</p>
+</div>
+
+				<h2 class="news-type">{{p.name}}</h2>
+{#	{% autoescape on %}#}
+{#	{{p.content|linebreaks|truncatewords:50}}#}
+{#	{% endautoescape %}#}
+			<div class="clear"></div>
+
+			</li>
+	{% endfor %}
+</ul>
+		</div>
+
+
+
+		</div>
+
+{% endblock %}
