@@ -197,15 +197,23 @@ async def process_start(callback_query, new):
     if user_id in sessions.keys() and sessions[user_id].profile.state == 'started':
         await bot.send_message(user_id, 'Вы уже начали игру\n\nСохранить и выйти - /quit')
         return
-    p = await sync_to_async(Profile.objects.get)(external_id=user_id)
-    session = Session(profile=p, new=new[1])
 
-    loop = asyncio.get_running_loop()
-    loop.create_task(session.scheduled())
+    if user_id in sessions.keys():
+        session = Session(profile=sessions[user_id].profile, new=new[1], data=sessions[user_id].rpg_data)
+        session.profile.state = 'started'
+        sessions[user_id] = session
 
-    sessions[user_id] = session
-    p.state = 'started'
-    await sync_to_async(p.save)()
+        await sync_to_async(session.profile.save)()
+    else:
+        p = await sync_to_async(Profile.objects.get)(external_id=user_id)
+        session = Session(profile=p, new=new[1])
+        p.state = 'started'
+        loop = asyncio.get_running_loop()
+        loop.create_task(session.scheduled())
+        sessions[user_id] = session
+
+        await sync_to_async(p.save)()
+
     await bot.send_message(user_id, new[0])
 
     answer_text, image, sticker, kb = await session.action_process()

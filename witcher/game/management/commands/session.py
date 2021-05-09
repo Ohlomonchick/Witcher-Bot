@@ -11,11 +11,15 @@ from game.models import Profile
 
 class Session:
 
-    def __init__(self, profile, new=False):
-        self.rpg_data = copy.deepcopy(rpg_data)
-        # global rpg_data
+    def __init__(self, profile, new=False, data=None):
+        self.rpg_data = copy.deepcopy(rpg_data) if not data else data
         self.profile = profile
         self.action_data = self.rpg_data[profile.position - 1] if not new else self.rpg_data[0]
+
+        if new:
+            self.profile.experience = 0
+            self.profile.karma = 50
+
         self.action = self.action_data['name']
         self.chosen_action = None
         self.available_actions = None
@@ -53,16 +57,23 @@ class Session:
             self.rpg_data = copy.deepcopy(rpg_data)
 
         if self.chosen_action:
-            if 'answer' not in self.action_data.keys() and not self.correct \
-                    and len(self.action_data['actions'][self.available_actions[self.chosen_action - 1]]) >= 3:
-                self.profile.achievement[self.action_data['actions'][self.available_actions[self.chosen_action - 1]][2]] = True
-                print('Получено достижение {}')
+            if 'answer' not in self.action_data.keys() and not self.correct:
+                data = self.action_data['actions'][self.available_actions[self.chosen_action - 1]]
+                if len(data) >= 3 and data[2]:
+                    self.profile.achievement[data[2]] = True
+                    print('Получено достижение {}')
+                if len(data) >= 4 and data[3]:
+                    self.profile.karma += data[3]
+                    await self._reckon()
+                if len(data) >= 5:
+                    pass
 
             if self.available_actions and self.chosen_action != len(self.available_actions) + 1:
                 self.action = self.available_actions[self.chosen_action - 1]
                 self.action_data = self.rpg_data[
                     self.action_data['actions'][self.available_actions[self.chosen_action - 1]][0]]
                 self.profile.position = int(self.action_data['name'])
+
 
         self.correct = False
 
@@ -114,6 +125,8 @@ class Session:
         return text, image, sticker, kb
 
     async def _answer_check(self, message=None):
+        self.appeals += 1
+        self.can_be_deleted = False
         self.received_answer = message
         try:
             if type(self.answer['answ']) == str:
@@ -127,7 +140,12 @@ class Session:
 
             self.profile.state = 'started'
             answer_text = 'ВЕРНО!\n'
-            answer_text += '-' * 20 + '\n\n'
+            answer_text += '-' * 20 + '\n'
+            if 'reward' in self.answer.keys():
+                reward = self.answer['reward']
+                self.profile.experience = self.profile.experience + reward
+                answer_text += f'Вы получили {reward} опыта в награду\n\n'
+                await self._reckon()
             answer_text += self.answer['after']
             self.action_data.pop('answer')
             self.answer = None
@@ -138,6 +156,10 @@ class Session:
             if self.received_answer:
                 await self.received_answer.answer('Вы ввели неправильный ответ')
             self.profile.state = 'wrong_answer'
+
+    async def _reckon(self):
+        self.profile.total = round(self.profile.experience * (self.profile.karma / 100))
+        await sync_to_async(self.profile.save, thread_sensitive=False)()
 
 
 # class Command(BaseCommand):
