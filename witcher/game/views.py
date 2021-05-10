@@ -7,7 +7,7 @@ from game.models import Profile
 
 
 class Home(ListView):
-    # paginate_by = 15
+    paginate_by = 15
     model = Profile
     template_name = 'game/index.html'
     context_object_name = 'posts'

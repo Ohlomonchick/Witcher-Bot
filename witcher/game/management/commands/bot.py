@@ -1,20 +1,18 @@
 import asyncio
-
-from aiogram.utils.markdown import text
-from asgiref.sync import sync_to_async
-
-from .config import TOKEN
 import logging
-from .keyboards import *
-from .game_data import rpg_data
+import os
 
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import ReplyKeyboardRemove, ReplyKeyboardMarkup, KeyboardButton, \
-    InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.markdown import text
+from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
+from django.core.files import File
 
-from ...models import Profile
+from .config import TOKEN
+from .keyboards import *
 from .session import Session
+from ...models import Profile
 
 logging.basicConfig(level=logging.INFO)
 
@@ -280,13 +278,28 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     text = f''
-
+    defaults = {
+        'name': message.from_user.username,
+    }
     p, created = await sync_to_async(Profile.objects.get_or_create, thread_sensitive=True)(
         external_id=message.from_user.id,
-        defaults={
-            'name': message.from_user.username,
-        }
+        defaults=defaults
     )
+    if created or not p.photo:
+        got_photos = await bot.get_user_profile_photos(message.from_user.id)
+        if got_photos.total_count > 0:
+            try:
+                photo = got_photos.photos[0][0]["file_id"]
+                file_info = await bot.get_file(photo)
+                downloaded = await bot.download_file(file_info.file_path)
+                src = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..', 'game/media/photos'))
+                new_path = file_info.file_path[file_info.file_path.index('/') + 1:]
+                src = os.path.join(src, new_path)
+
+                await sync_to_async(p.photo.save)(new_path, File(downloaded), save=True)
+            except Exception as exc:
+                print(exc)
+
     kb = game_not_exist_kb
     title = 'ДОБРО ПОЖАЛОВАТЬ В ИГРУ "ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
     main_title = f'\n{title}\n'

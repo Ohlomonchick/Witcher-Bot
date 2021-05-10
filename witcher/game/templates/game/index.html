@@ -2,14 +2,11 @@
 {% load static %}
 {% block content %}
 
-{#    <video autoplay muted loop id="myVideo">#}
-{#  				<source src="videos/Cyberpunk.mp4" type="video/mp4">#}
-{#		</video>#}
-    <div id="particles-js"></div>
+  <img src="{% static 'game/images/wallpaperflare.com_wallpaper (47).jpg' %}" id="myVideo">
 		<div class="main-opacity on-video">
 				<div class="container">
 					<div class="container-center">
-						<h1 class="main-titleF">NEURAL
+						<h1 class="main-titleF">WITCHER-BOT LEADERS
 							<span class="main-title2"></span>
 						</h1>
 						<div class="main-container">
@@ -22,40 +19,73 @@
 					</div>
 				</div>
 				<div class="scrollme scrollme-on-video" style=" ;">
-
+                    <svg viewBox="0 0 32 32" height="35" width="35">
+						<path stroke="#ffffff" stroke-width="2px" d="M2.000,5.000 L15.000,18.000 L28.000,5.000 "></path>
+					</svg>
 				</div>
 			</div>
-		<div class="prev-main main-block">
+        <div class="prev-main main-block">
 			<div class="main-opacity prev-op">
 				<div class="container">
 					<div class="container-center">
 						<div class="main-container">
-						<div class="description">
-							<h2 class="bg-text">Дорогой читатель</h2>
-                            <p>&nbsp;&nbsp;&nbsp;Если ты зашёл на эту платформу, скорее всего ты интересуешься темой искусственного интеллекта. </p>
-							<p>&nbsp;&nbsp;&nbsp;Здесь ты найдёшь информацию о нейронных сетях: их устройстве, обучении и применении. По мере изучения данного материала ты сам научишься проектировать нейронные сети.
-                            Всё, что для этого необходимо - пройти&nbsp;регистрацию.</a> После ты сможешь приступить к изучению.</p>
-                            <p>Проходи уроки, выполняй тесты, зарабатывай очки и открывай доступ к новым знаниям!</p>
-						</div>
-						</div>
-						</div>
-					</div>
-				</div>
-			</div>
-    <ul class="list-articles">
-	{% for p in posts %}
-			<li><div class="news-type">
-	<p class="news-type">Очки: {{p.total}}</p>
-</div>
-
-				<h2 class="news-type">{{p.name}}</h2>
-{#	{% autoescape on %}#}
-{#	{{p.content|linebreaks|truncatewords:50}}#}
-{#	{% endautoescape %}#}
-			<div class="clear"></div>
-
-			</li>
-	{% endfor %}
+                <table>
+                <tr>
+                    <th colspan="2">Пользователь</th>
+                    <th>Максимум очков</th>
+                    <th>Текущий опыт</th>
+                    <th>Карма</th>
+                    <th>Концовка</th>
+                    <th>Уровень</th>
+                </tr>
+                {% for p in posts %}
+                        <tr>
+                            {% if p.photo %}
+                            <td><img class="img-profile" src="{{p.photo.url}}"></td>
+                            {% else %}
+                                <td><div class="circle-profile" ></div></td>
+                            {% endif %}
+                            <td>{{p.name}}</td>
+                            <td> {{p.total}}</td>
+                            <td> {{p.experience}}</td>
+                            <td> {{p.karma}}</td>
+                            <td> {{p.ending}}</td>
+                            <td> {{p.level}}</td>
+                        </tr>
+                {% endfor %}
+                    </table>
+                        {% if page_obj.has_other_pages %}
+                        <nav class="list-pages">
+                            <ul>
+                            {% if page_obj.has_previous %}
+                                <li class="block-num">
+                                    <a href="?page={{ page_obj.previous_page_number }}" style="text-decoration: none;">&lt;</a>
+                                </li>
+                            {% endif %}
+                                {% for p in paginator.page_range %}
+                                {% if page_obj.number == p %}
+                                    <li class="block-num block-num-selected">
+                                        <a style="text-decoration: none;">{{ p }}</a>
+                                    </li>
+                                {% elif p >= page_obj.number|add:-1 and p <= page_obj.number|add:1 %}
+                                <li class="block-num">
+                                    <a href="?page={{ p }}" style="text-decoration: none;">{{ p }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="block-num">
+                                    <a href="?page={{ page_obj.next_page_number }}" style="text-decoration: none;">&gt;</a>
+                                </li>
+                            {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 </ul>
 		</div>
 
