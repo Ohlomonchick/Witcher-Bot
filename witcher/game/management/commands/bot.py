@@ -325,7 +325,7 @@ async def start(message: types.Message):
         text += f'{main_title}{disclaimer}Рад снова тебя видеть.\n\nВАШ РЕКОРД:   {p.total}'
         text += f'\n\nНачните новую игру {resume}!'
     kb.add(website_button)
-    image = 'AgACAgIAAxkBAAIHlmCZVV3NptUa0BhYLkGNk9F3cCAKAAJqszEb69nRSHMvJT5S6bLj1Us0ny4AAwEAAwIAA20AAyXUAwABHwQ'
+    image = 'AgACAgIAAxkBAAMIYJmUP9UZseeI_vU2fq2YfkIC1LgAAmqzMRvr2dFIEwg1XWuk_pjVSzSfLgADAQADAgADbQADJdQDAAEfBA'
     # await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
     await bot.send_photo(message.from_user.id, image, reply_markup=kb, caption=text)
 

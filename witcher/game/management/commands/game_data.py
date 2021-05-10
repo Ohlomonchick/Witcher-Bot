@@ -9,7 +9,7 @@ rpg_data = [
 Но вдруг, за небольшим холмом, послышались звуки, походившие на звуки рабочего села.
 - Хм, неужели?...''',
         'actions': {'Отправиться в сторону деревни.': (30, None)},
-        'image': 'AgACAgIAAxkBAAIHoWCZWBWuSXcmrgWEM1Bw8WmfLWvCAAKqszEb69nRSASBu_G4M7m7bttToi4AAwEAAwIAA20AAwMOAgABHwQ',
+        'image': 'AgACAgIAAxkBAAMPYJmUy4uzQEJYC0SVFmWYMdXR_O0AAqqzMRvr2dFI_gLnUHgshkRu21OiLgADAQADAgADbQADAw4CAAEfBA',
     },
     {
         'name': '2',
@@ -42,7 +42,7 @@ rpg_data = [
 Теперь твоё это.
 ''',
         'actions': {'Принять дар от тролля. Пожарить оленину и уйти.': (29, None)},
-        'image': 'AgACAgIAAxkBAAIHo2CZWDDPBhOHoKLIOoz3l32mOio6AAKrszEb69nRSAZlzHjHAgaczIXDmi4AAwEAAwIAA20AA2-CAAIfBA',
+        'image': 'AgACAgIAAxkBAAMRYJmU7FsaSaO3rqpa17FaE8s1m0MAAquzMRvr2dFIZOT7YoQR_6HMhcOaLgADAQADAgADbQADb4IAAh8E',
     },
     {
         'name': '4',
@@ -73,7 +73,8 @@ rpg_data = [
 горе других людей? А может, сам ведьмак?"...
 ''',
         'actions': {},
-        'image': 'AgACAgIAAxkBAAIHpWCZWIBWP6nS4IkLD14lTv8mlgdKAAKsszEb69nRSNS5iimvP6xV2ukymy4AAwEAAwIAA20AAylZBgABHwQ',
+        'image': 'AgACAgIAAxkBAAMTYJmVB520g3IpgZdtyvjbdsQ8GgQAAqyzMRvr2dFI-5gBo1ZI4hXa6TKbLgADAQADAgADbQADKVkGAAEfBA',
+        'ending': 'Вопросы мироздания'
     },
     {
         'name': '6',
@@ -96,7 +97,7 @@ rpg_data = [
 Оставалось только взять трофей, голову тролля, и отправиться в деревню за наградой.
 ''',
         'actions': {' Взять трофей. Отправиться в деревню за наградой.': (26, None, 'troll_dead', -10)},
-        'image': 'AgACAgIAAxkBAAIHp2CZWRK12gjfFQ4t0yZChBX5gfKeAAKuszEb69nRSLKqrTj-aYAt47EHni4AAwEAAwIAA20AA174BQABHwQ',
+        'image': 'AgACAgIAAxkBAAMVYJmVRtEM8dnIPUhTYAm3zQiXY3oAAjG0MRtK9chIAx10lrVQ9zcPUQukLgADAQADAgADbQADbuMAAh8E',
     },
     {
         'name': '7',
@@ -117,7 +118,7 @@ rpg_data = [
 ''',
         'actions': {'-"Ты будешь брать плату меня за невыполненную работу?"': (25, None),
                     '-"Оплаты не будет, тролль, хватит с тебя проблем для умирающей деревни" [напасть на тролля]': (9, None)},
-        'image': 'AgACAgIAAxkBAAIH2mCZZJaLLfzJmfre20dbmkJsbavzAAKkszEb69nRSJ7voV3qLTKJIVVSoi4AAwEAAwIAA20AA_gbAgABHwQ',
+        'image': 'AgACAgIAAxkBAAMXYJmVWlr0l5ZQTkYsC0RkCYZMObMAAjK0MRtK9chIE2KjkJG65oXqyYqiLgADAQADAgADbQADQhwCAAEfBA',
     },
     {
         'name': '8',
@@ -167,7 +168,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
                     'Применить масло против тролля.': (33, None)},
         'answer': {'answ': 2, 'before': 'Найдите больший корень', 'after': 'Отлично, кажется Белый Волк пришёл в себя, можно и подраться',
                    'reward': 50},
-        'image': 'AgACAgIAAxkBAAIHp2CZWRK12gjfFQ4t0yZChBX5gfKeAAKuszEb69nRSLKqrTj-aYAt47EHni4AAwEAAwIAA20AA174BQABHwQ',
+        'image': 'AgACAgIAAxkBAAMVYJmVRtEM8dnIPUhTYAm3zQiXY3oAAjG0MRtK9chIAx10lrVQ9zcPUQukLgADAQADAgADbQADbuMAAh8E',
     },
     {
         'name': '11',
@@ -190,7 +191,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 думаю, тебе не дать монета, я ведь живой"
 ''',
         'actions': {'-"Да, остался я из-за тебя без награды, но оно того стоило."': (15, None)},
-        'image': 'AgACAgIAAxkBAAIHq2CZWx5BvH955XV2lfUBLswYNZ09AALOszEb69nRSH6oOaDVg1tBX_dZoi4AAwEAAwIAA20AA-L6AQABHwQ',
+        'image': 'AgACAgIAAxkBAAMZYJmVsFCWl-44EPoZOIayLhjC8KYAAs6zMRvr2dFIrDeS1zU9VbZf91miLgADAQADAgADbQAD4voBAAEfBA',
     },
     {
         'name': '13',
@@ -230,7 +231,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
         'message': '''- Как дальше то быть? Жить здеся - нельзя, убьють.
 ''',
         'actions': {'-"Я думаю, бросай пить и иди отсюда подальше. Драться я с тобой не буду, а вот в деревне хоте ли бы, чтобы ты умер" ': (2, None)},
-        'image': 'AgACAgIAAxkBAAIHq2CZWx5BvH955XV2lfUBLswYNZ09AALOszEb69nRSH6oOaDVg1tBX_dZoi4AAwEAAwIAA20AA-L6AQABHwQ',
+        'image': 'AgACAgIAAxkBAAMZYJmVsFCWl-44EPoZOIayLhjC8KYAAs6zMRvr2dFIrDeS1zU9VbZf91miLgADAQADAgADbQAD4voBAAEfBA',
     },
     {
         'name': '17',
@@ -245,7 +246,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 Это был всего лишь очередной заказ на очередное чудовище.
 ''',
         'actions': {},
-        'image': 'AgACAgIAAxkBAAIHrWCZXSGjIawPSxSssNMqebhHrKOlAALPszEb69nRSOlK3YXYiyPhc6dapC4AAwEAAwIAA20AAyHZAAIfBA',
+        'image': 'AgACAgIAAxkBAAMbYJmVy2QK7cH5Y2EWlrQiKMp3XYQAAs-zMRvr2dFImXwhKTFYfGdzp1qkLgADAQADAgADbQADIdkAAh8E',
         'ending': 'Всего лишь очередной заказ'
     },
     {
@@ -311,7 +312,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 ''',
         'actions': {'-"Что за беда у вас с троллем?"': (18, None),
                     '-"Впервые вижу в Новой Темерии, чтобы был такой контраст между домом старосты и остальными халупами. Вижу, хорошо вы устроились': (13, None, None, 3)},
-        'image': 'AgACAgIAAxkBAAIHr2CZXT80FE_dAyXeDkkvC7CNpBLPAALQszEb69nRSGAY8Vf4MjjzL14OpC4AAwEAAwIAA20AA2vbAAIfBA',
+        'image': 'AgACAgIAAxkBAAMdYJmV8TQ2vjDJoL2BNl-wcr4CgG8AAtCzMRvr2dFIyQ4yC5Wl3okvXg6kLgADAQADAgADbQAD',
     },
     {
         'name': '23',
@@ -327,7 +328,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 отправился в хату к старосте...
 ''',
         'actions': {'Войти в хату к старосте.': (14, None)},
-        'image': 'AgACAgIAAxkBAAIHsWCZXc8iIvXlZDHEUtyH9BvjcUXMAALRszEb69nRSAOfSs0gkaM1TptXpC4AAwEAAwIAA20AA8DqAAIfBA',
+        'image': 'AgACAgIAAxkBAAMfYJmWCrJ1g7PQnJYwG9JYDXXdh0wAAtGzMRvr2dFIDHhFkVCFfztOm1ekLgADAQADAgADbQADwOoAAh8E',
     },
     {
         'name': '24',
@@ -348,7 +349,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 отправился в хату к старосте...
 ''',
         'actions': {'Войти в хату к старосте.': (14, None)},
-        'image': 'AgACAgIAAxkBAAIHs2CZXtMPpf7n9iKRxNFO3O48rMuUAALTszEb69nRSDE5PANXhgU4DkWJoi4AAwEAAwIAA20AAxD7AQABHwQ',
+        'image': 'AgACAgIAAxkBAAMhYJmWG_1L5wbH2p8SIa_JO2YljjEAAtOzMRvr2dFIPmgWOPxSilgORYmiLgADAQADAgADbQADEPsBAAEfBA',
     },
     {
         'name': '25',
@@ -383,7 +384,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
         'actions': {'Обвинить Бориса в том, что он изначально нанимал людей, чтобы убить двух троллей, но выжил только один. Староста решил намеренно споить того, чтобы получать с него деньги за разграбление прохожих': (7, 'note', None, 2),
                     'Поблагодарить старосту, взять деньги и уйти восвояси': (16, None),
                     'Шантажировать старосту тем фактом, что знаешь о намеренном спаивании тролля с целью грабежа прохожих людей. Рассказать деревне о том, что все бедства деревни связаны с этим': (7, 'note')},
-        'image': 'AgACAgIAAxkBAAIHtWCZXz5X6RR-qGb2DO3PCbfxpkFVAALQszEb69nRSGAY8Vf4MjjzL14OpC4AAwEAAwIAA20AA2vbAAIfBA',
+        'image': 'AgACAgIAAxkBAAMdYJmV8TQ2vjDJoL2BNl-wcr4CgG8AAtCzMRvr2dFIyQ4yC5Wl3okvXg6kLgADAQADAgADbQADa9sAAh8E',
     },
     {
         'name': '28',
@@ -398,7 +399,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 оренов. По вопросам всяческим - обращаться к старосте Борису".
 ''',
         'actions': {'Получается, Борис изначально нанимал кого-то, чтобы убить троллей. Видно, не очень у них это получилось. Но зачем староста стал платить троллю за грабёж прохожих, но говорит, что тот должен был достроить мост? Ерунда какая-то': (20, None, 'note')},
-        'image': 'AgACAgIAAxkBAAIHt2CZX3DppZ93vVVHY0CQdjL35CzzAALVszEb69nRSI6oXMy_xa5XxJSboi4AAwEAAwIAA20AA1ntAQABHwQ',
+        'image': 'AgACAgIAAxkBAAMjYJmWROaJux2OkMU7Fh1Sc9-EEoAAAtWzMRvr2dFIoigMecumkCzElJuiLgADAQADAgADbQADWe0BAAEfBA',
     },
     {
         'name': '29',
@@ -409,7 +410,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 ТОЙ СКОТИНА?!"
 ''',
         'actions': {'Да, я отомстил за твою супругу.': (11, None)},
-        'image': 'AgACAgIAAxkBAAIHq2CZWx5BvH955XV2lfUBLswYNZ09AALOszEb69nRSH6oOaDVg1tBX_dZoi4AAwEAAwIAA20AA-L6AQABHwQ',
+        'image': 'AgACAgIAAxkBAAMZYJmVsFCWl-44EPoZOIayLhjC8KYAAs6zMRvr2dFIrDeS1zU9VbZf91miLgADAQADAgADbQAD4voBAAEfBA',
     },
     {
         'name': '30',
@@ -429,7 +430,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 ''',
         'actions': {},
         'ending': 'Месть свершилась',
-        'image': 'AgACAgIAAxkBAAIHuWCZYM-y3OLYe7E6-ktR8TRkf9eXAALXszEb69nRSCvByjtt_UUBhymgoi4AAwEAAwIAA20AAxQDAgABHwQ',
+        'image': 'AgACAgIAAxkBAAMlYJmWdvBOj_uNNY3XtiSCpJQBj2gAAjO0MRtK9chIaDznDOsNukTH5pCiLgADAQADAgADbQAD1S8CAAEfBA',
     },
     {
         'name': '31',
@@ -460,7 +461,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 голову. Работа была сделана.
 ''',
         'actions': {'Взять трофей и отправиться в деревню.': (26, None, 'troll_dead')},
-        'image': 'AgACAgIAAxkBAAIHp2CZWRK12gjfFQ4t0yZChBX5gfKeAAKuszEb69nRSLKqrTj-aYAt47EHni4AAwEAAwIAA20AA174BQABHwQ',
+        'image': 'AgACAgIAAxkBAAMVYJmVRtEM8dnIPUhTYAm3zQiXY3oAAjG0MRtK9chIAx10lrVQ9zcPUQukLgADAQADAgADbQADbuMAAh8E',
     },
     {
         'name': '33',
@@ -505,7 +506,7 @@ x ** 2 + x - 6 = 0    "Хммм, больший корень равен..."
 старосты Бориса...
 ''',
         'actions': {'Взять трофей и отправиться в деревню за наградой.': (26, None, 'troll_dead')},
-        'image': 'AgACAgIAAxkBAAIHp2CZWRK12gjfFQ4t0yZChBX5gfKeAAKuszEb69nRSLKqrTj-aYAt47EHni4AAwEAAwIAA20AA174BQABHwQ',
+        'image': 'AgACAgIAAxkBAAMVYJmVRtEM8dnIPUhTYAm3zQiXY3oAAjG0MRtK9chIAx10lrVQ9zcPUQukLgADAQADAgADbQADbuMAAh8E',
     },
     {
         'name': '35',
