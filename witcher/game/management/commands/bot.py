@@ -130,7 +130,6 @@ async def started(message: types.Message, session: Session):
 
     if sticker:
         await message.answer_sticker(sticker)
-
     if kb:
         await message.answer(text, reply_markup=kb)
     else:
@@ -144,7 +143,7 @@ async def wrong_answer(message: types.Message, session: Session):
     else:
         session.action_data = session.rpg_data[session.profile.position - 1]
         session.answer = session.action_data['answer']
-        response = await session._answer_check(message)
+        response = await session.answer_check(message)
         if response:
             session.chosen_action = response[0]
             await message.answer(response[1])
@@ -183,7 +182,14 @@ async def process_callback_btn(callback_query: types.CallbackQuery):
             await bot.send_sticker(user_id, sticker)
 
         if kb:
-            await bot.send_message(user_id, answer_text, reply_markup=kb)
+            if image:
+                try:
+                    await bot.send_photo(user_id, image, reply_markup=kb, caption=answer_text)
+                except Exception as exc:
+                    await bot.send_photo(user_id, image)
+                    await bot.send_message(user_id, answer_text, reply_markup=kb)
+            else:
+                await bot.send_message(user_id, answer_text, reply_markup=kb)
         else:
             await bot.send_message(user_id, answer_text)
     else:
@@ -218,6 +224,9 @@ async def process_start(callback_query, new):
 
     if sticker:
         await bot.send_sticker(user_id, sticker)
+
+    if image:
+            await bot.send_photo(user_id, image)
 
     if kb:
         await bot.send_message(user_id, answer_text, reply_markup=kb)
@@ -313,11 +322,12 @@ async def start(message: types.Message):
         if p.position != 1:
             resume = 'или продолжите текущую'
             kb = game_exist_kb
-        text += f'{main_title}{disclaimer}Рад снова тебя видеть.\n\nВАШ РЕКОРД:   {p.total}\n\nТаблица лидеров:'
+        text += f'{main_title}{disclaimer}Рад снова тебя видеть.\n\nВАШ РЕКОРД:   {p.total}'
         text += f'\n\nНачните новую игру {resume}!'
-
-    await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
-    await message.answer(text + '\n', reply_markup=kb)
+    kb.add(website_button)
+    image = 'AgACAgIAAxkBAAIHlmCZVV3NptUa0BhYLkGNk9F3cCAKAAJqszEb69nRSHMvJT5S6bLj1Us0ny4AAwEAAwIAA20AAyXUAwABHwQ'
+    # await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
+    await bot.send_photo(message.from_user.id, image, reply_markup=kb, caption=text)
 
 
 help_message = text(
@@ -369,6 +379,16 @@ async def process_quit_command(message: types.Message):
         await message.answer("Игра сохранена")
         message.text = 'Начать таблица продолжить'
         await states['not_started'](message)
+
+
+@dp.message_handler(content_types=['photo'])
+async def scan_message(message: types.Message):
+    await message.answer(message.photo[0].file_id + '\nЯ не знаю, как на это ответить\nПомощь - /help')
+
+
+@dp.message_handler(content_types=['audio'])
+async def scan_message(message: types.Message):
+    await message.answer('Я не знаю, как на это ответить\nПомощь - /help')
 
 
 @dp.message_handler()

@@ -25,6 +25,7 @@ class Session:
         self.available_actions = None
         self.message = ''
         self.correct = False
+        self.attempts = 0
 
         self.text = ''
         self.answer = None
@@ -86,12 +87,21 @@ class Session:
             self.available_actions = [context for context, i in self.action_data['actions'].items()
                                       if (i[1] is None or self.profile.achievement[i[1]])]
 
+        if 'image' in self.action_data.keys():
+            image = self.action_data['image']
+        if 'ending' in self.action_data.keys():
+            self.profile.ending = self.action_data['ending']
+            await sync_to_async(self.profile.save, thread_sensitive=False)()
+
         text = self.action_data['message']
         if self.profile.position != 1 and type(self.action) != int and not self.action.isdigit():
             if len(self.action) < 40:
                 text += f'\nВы выбрали действие [{self.action}]'
             else:
                 text += f'\nВы выбрали действие [{self.action[:40]}...]'
+
+        if 'ending' in self.action_data.keys():
+            text += f'\nНабранные очки: {self.profile.total}'
 
         kb = InlineKeyboardMarkup()
         if self.answer:
@@ -100,7 +110,6 @@ class Session:
             self.available_actions = []
         else:
             text += '\n\nВыберите действие:'
-
             bigger = False
 
             for i, action in zip(range(len(self.available_actions)), self.available_actions):
@@ -114,7 +123,7 @@ class Session:
                     text += f'\n{i + 1}.{action}'
 
         last = len(self.available_actions) + 1
-        kb.add(InlineKeyboardButton(f'{last}.Сохранить и выйти', callback_data=f'quit_game'))
+        kb.add(InlineKeyboardButton(f'Сохранить и выйти', callback_data=f'quit_game'))
 
         # TODO получить ответ
         if self.answer:
@@ -124,7 +133,7 @@ class Session:
 
         return text, image, sticker, kb
 
-    async def _answer_check(self, message=None):
+    async def answer_check(self, message=None):
         self.appeals += 1
         self.can_be_deleted = False
         self.received_answer = message
@@ -150,10 +159,15 @@ class Session:
             self.action_data.pop('answer')
             self.answer = None
             self.correct = True
+            self.attempts = 0
             return self.chosen_action, answer_text
 
         except Exception as exc:
             if self.received_answer:
+                self.attempts += 1
+                if self.attempts >= 3:
+                    sticker = 'CAACAgIAAxkBAAEBRsdgmWNSeLBoNue7odVNyix3Vcq2rQACDwYAAtJaiAG_V86dCxeLCx8E'
+                    await self.received_answer.answer_sticker(sticker)
                 await self.received_answer.answer('Вы ввели неправильный ответ')
             self.profile.state = 'wrong_answer'
 
