@@ -3,10 +3,8 @@ import copy
 
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from asgiref.sync import sync_to_async
-from django.core.management import BaseCommand
 
 from game.management.commands.game_data import rpg_data
-from game.models import Profile
 
 
 class Session:
@@ -38,7 +36,7 @@ class Session:
 
     async def scheduled(self):
         while True:
-            await asyncio.sleep(20)
+            await asyncio.sleep(50)
             if self.appeals == 0 and not self.can_be_deleted:
                 await sync_to_async(self.profile.save, thread_sensitive=False)()
                 self.can_be_deleted = True
@@ -66,8 +64,6 @@ class Session:
                 if len(data) >= 4 and data[3]:
                     self.profile.karma += data[3]
                     await self._reckon()
-                if len(data) >= 5:
-                    pass
 
             if self.available_actions and self.chosen_action != len(self.available_actions) + 1:
                 self.action = self.available_actions[self.chosen_action - 1]
@@ -75,11 +71,7 @@ class Session:
                     self.action_data['actions'][self.available_actions[self.chosen_action - 1]][0]]
                 self.profile.position = int(self.action_data['name'])
 
-
         self.correct = False
-
-        # if 'achievement' in self.action_data.keys():
-        #     self.profile[self.action_data['achievement']] = True
 
         if 'answer' in self.action_data.keys():
             self.answer = self.action_data['answer']
@@ -100,8 +92,14 @@ class Session:
             else:
                 text += f'\nВы выбрали действие [{self.action[:40]}...]'
 
+        if 'reward' in self.action_data.keys():
+            reward = self.action_data['reward']
+            self.profile.experience = self.profile.experience + reward
+            text += f'\n\nВы получили {reward} опыта в награду\n\n'
+            await self._reckon()
         if 'ending' in self.action_data.keys():
-            text += f'\nНабранные очки: {self.profile.total}'
+            text += f'\nНабранные очки: {await self._reckon(now=True)}'
+            text += f'\n\nПоздравляю, вы завершили игру.\nДостигнута концовка "{self.profile.ending}"'
 
         kb = InlineKeyboardMarkup()
         if self.answer:
@@ -128,8 +126,6 @@ class Session:
         # TODO получить ответ
         if self.answer:
             self.profile.state = 'wrong_answer'
-            # self.chosen_action, answer_text = await self._answer_check()
-            # text += answer_text
 
         return text, image, sticker, kb
 
@@ -171,14 +167,10 @@ class Session:
                 await self.received_answer.answer('Вы ввели неправильный ответ')
             self.profile.state = 'wrong_answer'
 
-    async def _reckon(self):
-        self.profile.total = round(self.profile.experience * (self.profile.karma / 100))
-        await sync_to_async(self.profile.save, thread_sensitive=False)()
-
-
-# class Command(BaseCommand):
-#     help = 'Бот'
-#
-#     def handle(self, *args, **kwargs):
-#         s = Session(Profile.objects.get(external_id=737145534))
-#         print(s.rpg_data[0]['message'])
+    async def _reckon(self, now=False):
+        reckoned = round(self.profile.experience * (self.profile.karma / 100))
+        if self.profile.total < reckoned:
+            self.profile.total = reckoned
+            await sync_to_async(self.profile.save, thread_sensitive=False)()
+        if now:
+            return reckoned

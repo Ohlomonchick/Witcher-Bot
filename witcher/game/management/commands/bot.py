@@ -274,6 +274,7 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
             kb = game_exist_kb
         answer_text = f'{main_title}\n'
         answer_text += f'Начните новую игру {resume}!'
+        answer_text += f'\n\nВАШ РЕКОРД: {profile.total}'
 
         answer_text += '\n\nВы также можете ознакомиться с таблицей лидеров'
         if kb == game_exist_kb:
@@ -326,7 +327,6 @@ async def start(message: types.Message):
         text += f'\n\nНачните новую игру {resume}!'
     kb.add(website_button)
     image = 'AgACAgIAAxkBAAMIYJmUP9UZseeI_vU2fq2YfkIC1LgAAmqzMRvr2dFIEwg1XWuk_pjVSzSfLgADAQADAgADbQADJdQDAAEfBA'
-    # await message.answer_sticker(r'CAACAgIAAxkBAAEBREJglW1P_KkgG9GqO8ooNrKz4s3ZpwACKwYAAtJaiAHsejwtswOtzR8E')
     await bot.send_photo(message.from_user.id, image, reply_markup=kb, caption=text)
 
 
@@ -383,7 +383,7 @@ async def process_quit_command(message: types.Message):
 
 @dp.message_handler(content_types=['photo'])
 async def scan_message(message: types.Message):
-    await message.answer(message.photo[0].file_id + '\nЯ не знаю, как на это ответить\nПомощь - /help')
+    await message.answer('Я не знаю, как на это ответить\nПомощь - /help')
 
 
 @dp.message_handler(content_types=['audio'])
@@ -416,10 +416,10 @@ class Command(BaseCommand):
     help = 'Бот'
 
     def handle(self, *args, **kwargs):
-        # try:
-        loop = asyncio.get_event_loop()
-        loop.create_task(garbage_collector(50))
-        executor.start_polling(dp, skip_updates=True)
-        # except Exception as exc:
-        #     print(exc)
-        #     self.handle(*args, **kwargs)
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(garbage_collector(1800))
+            executor.start_polling(dp, skip_updates=True)
+        except Exception as exc:
+            print(exc)
+            self.handle(*args, **kwargs)

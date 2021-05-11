@@ -10,7 +10,6 @@ class ProfileAdmin(admin.ModelAdmin):
         'name',
         'experience',
         'karma',
-        'level',
         'total',
         'position'
     )
