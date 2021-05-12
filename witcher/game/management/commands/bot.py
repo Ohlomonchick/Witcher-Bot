@@ -394,7 +394,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             loop = asyncio.get_event_loop()
-            loop.create_task(garbage_collector(1800))
+            loop.create_task(garbage_collector(600))
             executor.start_polling(dp, skip_updates=True)
         except Exception as exc:
             print(exc)
