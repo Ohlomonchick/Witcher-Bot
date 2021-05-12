@@ -308,7 +308,6 @@ async def start(message: types.Message):
 
 
 help_message = text(
-    "Это урок по клавиатурам.",
     "Доступные команды:\n",
     "/start - приветствие",
     "/game - главное меню игры",
