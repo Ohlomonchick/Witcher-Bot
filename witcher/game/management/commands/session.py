@@ -13,7 +13,6 @@ class Session:
         self.rpg_data = copy.deepcopy(rpg_data) if not data else data
         self.profile = profile
         self.action_data = self.rpg_data[profile.position - 1] if not new else self.rpg_data[0]
-
         if new:
             self.profile.experience = 0
             self.profile.karma = 50
@@ -28,7 +27,6 @@ class Session:
         self.text = ''
         self.answer = None
         self.state = None
-
         self.received_answer = None
 
         self.appeals = 0
@@ -49,7 +47,6 @@ class Session:
         text, image, sticker, kb = '', None, None, None
         if message and not self.answer and message.text != '':
             return text, image, sticker, kb
-
         self.received_answer = message
 
         if int(self.action_data['name']) == 1:
@@ -60,7 +57,6 @@ class Session:
                 data = self.action_data['actions'][self.available_actions[self.chosen_action - 1]]
                 if len(data) >= 3 and data[2]:
                     self.profile.achievement[data[2]] = True
-                    print('Получено достижение {}')
                 if len(data) >= 4 and data[3]:
                     self.profile.karma += data[3]
                     await self._reckon()
@@ -79,12 +75,6 @@ class Session:
             self.available_actions = [context for context, i in self.action_data['actions'].items()
                                       if (i[1] is None or self.profile.achievement[i[1]])]
 
-        if 'image' in self.action_data.keys():
-            image = self.action_data['image']
-        if 'ending' in self.action_data.keys():
-            self.profile.ending = self.action_data['ending']
-            await sync_to_async(self.profile.save, thread_sensitive=False)()
-
         text = self.action_data['message']
         if self.profile.position != 1 and type(self.action) != int and not self.action.isdigit():
             if len(self.action) < 40:
@@ -92,12 +82,16 @@ class Session:
             else:
                 text += f'\nВы выбрали действие [{self.action[:40]}...]'
 
+        if 'image' in self.action_data.keys():
+            image = self.action_data['image']
         if 'reward' in self.action_data.keys():
             reward = self.action_data['reward']
             self.profile.experience = self.profile.experience + reward
             text += f'\n\nВы получили {reward} опыта в награду\n\n'
             await self._reckon()
         if 'ending' in self.action_data.keys():
+            self.profile.ending = self.action_data['ending']
+            await sync_to_async(self.profile.save, thread_sensitive=False)()
             text += f'\nНабранные очки: {await self._reckon(now=True)}'
             text += f'\n\nПоздравляю, вы завершили игру.\nДостигнута концовка "{self.profile.ending}"'
 
@@ -109,7 +103,6 @@ class Session:
         else:
             text += '\n\nВыберите действие:'
             bigger = False
-
             for i, action in zip(range(len(self.available_actions)), self.available_actions):
                 if len(action) >= 50:
                     bigger = True
@@ -120,10 +113,7 @@ class Session:
                 for i, action in zip(range(len(self.available_actions)), self.available_actions):
                     text += f'\n{i + 1}.{action}'
 
-        last = len(self.available_actions) + 1
         kb.add(InlineKeyboardButton(f'Сохранить и выйти', callback_data=f'quit_game'))
-
-        # TODO получить ответ
         if self.answer:
             self.profile.state = 'wrong_answer'
 

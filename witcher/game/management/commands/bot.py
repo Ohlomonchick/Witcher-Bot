@@ -24,17 +24,6 @@ log = logging.getLogger()
 sessions = {}
 
 
-def log_errors(f):
-    def inner(*args, **kwargs):
-        try:
-            f(*args, **kwargs)
-        except Exception as exc:
-            error_message = f'\nПРОИЗОШЛА ОШИБКА:   {exc}'
-            log.info(error_message)
-
-    return inner
-
-
 async def get_session(message=None, user_id=None, chosen=None):
     if message:
         user_id = message.from_user.id
@@ -43,21 +32,17 @@ async def get_session(message=None, user_id=None, chosen=None):
     else:
         p = await sync_to_async(Profile.objects.get)(external_id=user_id)
         if p.state == 'not_started':
-            # TODO сделать вызов not_started для кнопок
-            # message.text = 'Старт продолжить таблица'
             await not_started(message)
         else:
             session = Session(profile=p, new=False)
-
             loop = asyncio.get_running_loop()
             loop.create_task(session.scheduled())
 
             sessions[user_id] = session
-
             return session
 
 
-async def get_from(message):
+async def get_from_db(message):
     if type(message) == int:
         return await sync_to_async(Profile.objects.get, thread_sensitive=True)(external_id=message)
     else:
@@ -78,7 +63,7 @@ async def not_started(message: types.Message):
                 answer_text = 'Привет, хочешь начать игру? \n'
             title = '"ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
             main_title = f'\n{title}\n'
-            profile = await get_from(message)
+            profile = await get_from_db(message)
 
             kb = game_not_exist_kb
             resume = ''
@@ -91,7 +76,7 @@ async def not_started(message: types.Message):
     for p in patterns[-2:-1]:
         if p in message.text.lower() and counter == 0:
             if not profile:
-                profile = await get_from(message)
+                profile = await get_from_db(message)
             your_goal = f'\n\nВАШ РЕКОРД:   {profile.total}\n'
             if 'не знаю' in answer_text:
                 answer_text = your_goal
@@ -158,7 +143,6 @@ states = {
 }
 
 
-# TODO сделать проверку на уникальность
 @dp.callback_query_handler(lambda c: c.data and c.data.startswith('btn'))
 async def process_callback_btn(callback_query: types.CallbackQuery):
     code = callback_query.data[-1]
@@ -170,17 +154,15 @@ async def process_callback_btn(callback_query: types.CallbackQuery):
     else:
         session = await get_session(user_id=user_id)
         session.available_actions = [context for context, i in session.action_data['actions'].items()
-                                      if (i[1] is None or session.profile.achievement[i[1]])]
+                                     if (i[1] is None or session.profile.achievement[i[1]])]
 
     if place == int(session.action_data['name']):
         await bot.answer_callback_query(callback_query.id)
         session.chosen_action = int(code)
 
         answer_text, image, sticker, kb = await session.action_process()
-
         if sticker:
             await bot.send_sticker(user_id, sticker)
-
         if kb:
             if image:
                 try:
@@ -216,18 +198,14 @@ async def process_start(callback_query, new):
         loop.create_task(session.scheduled())
         sessions[user_id] = session
 
-        await sync_to_async(p.save)()
-
+        await sync_to_async(p.save, thread_sensitive=False)()
     await bot.send_message(user_id, new[0])
 
     answer_text, image, sticker, kb = await session.action_process()
-
     if sticker:
         await bot.send_sticker(user_id, sticker)
-
     if image:
-            await bot.send_photo(user_id, image)
-
+        await bot.send_photo(user_id, image)
     if kb:
         await bot.send_message(user_id, answer_text, reply_markup=kb)
     else:
@@ -260,12 +238,11 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
         await sync_to_async(session.profile.save)()
         session.can_be_deleted = True
         session.appeals = 0
-
         await bot.send_message(user_id, "Игра сохранена")
 
         title = '"ВЕДЬМАК: ТРОЛЛЬЯ ВЕНДЕТТА"'
         main_title = f'\n{title}\n'
-        profile = await get_from(callback_query.from_user.id)
+        profile = await get_from_db(callback_query.from_user.id)
 
         kb = game_not_exist_kb
         resume = ''

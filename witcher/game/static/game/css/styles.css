@@ -764,9 +764,16 @@ table tr:last-child td:last-child {
 	}
 	table th:nth-child(5) {
 		display: none;
+		border-bottom-right-radius: 10px;
 	}
-	table td:nth-child(5) {
-		display: none;
+	table tr:last-child {
+    	border-bottom-right-radius: 10px;
+    	border-bottom: none;
+	}
+	table tr:last-child td:nth-child(5) {
+    	border-bottom-right-radius: 10px;
+    	border-bottom: none;
+		border-right: none;
 	}
 	table th:nth-child(6) {
 		display: none;
@@ -985,8 +992,20 @@ table tr:last-child td:last-child {
 	select {
 		margin-right: 0;
 	}
-	th:nth-child(3) {
+	table tr:last-child td:nth-child(3) {
+    	border-bottom-right-radius: 10px;
+    	border-bottom: none;
+		border-right: none;
+	}
+	table th:nth-child(2) {
 		border-top-right-radius: 10px;
+		border-right: none;
+	}
+	th:nth-child(3) {
+		display: none;
+	}
+	td:nth-child(3) {
+		display: none;
 	}
 	th:nth-child(4) {
 		display: none;
