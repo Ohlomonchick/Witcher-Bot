@@ -372,7 +372,10 @@ async def base_handler(message: types.Message):
     session = await get_session(message)
     if session:
         session.can_be_deleted = False
-        await states[session.profile.state](message, session)
+        if session.profile.state != 'not_started':
+            await states[session.profile.state](message, session)
+        else:
+            await states[session.profile.state](message)
 
 
 async def garbage_collector(wait_for):
