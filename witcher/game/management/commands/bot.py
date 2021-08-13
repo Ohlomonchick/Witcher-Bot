@@ -265,9 +265,16 @@ async def process_callback_start_game(callback_query: types.CallbackQuery):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     text = f''
-    defaults = {
-        'name': message.from_user.username,
-    }
+    try:
+        defaults = {
+            'name': message.from_user.username,
+        }
+    except Exception as exc:
+        defaults = {
+            'name': message.from_user.first_name + ' ' + message.from_user.last_name,
+        }
+    if 'name' not in defaults.keys():
+        defaults['name'] = message.from_user.first_name + ' ' + message.from_user.last_name
     p, created = await sync_to_async(Profile.objects.get_or_create, thread_sensitive=True)(
         external_id=message.from_user.id,
         defaults=defaults
